@@ -199,6 +199,11 @@ footer{padding-block:0 40px;color:var(--muted);font-size:.8rem}
 .today{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;display:grid;gap:6px}
 .today .next{font-family:var(--font-display);font-weight:700;font-size:2.1rem;line-height:1;text-transform:uppercase;letter-spacing:.01em}
 .today .meta{color:var(--muted);font-size:.93rem}
+.today .when{font-weight:600;color:var(--accent)}
+.today .when:empty{display:none}
+.today.rest{border-left-color:var(--green)}
+.today.rest .when{color:var(--green)}
+.week i.extra{opacity:.45}
 .week{display:flex;align-items:center;gap:6px;font-size:.875rem;color:var(--muted)}
 .week i{width:12px;height:12px;border-radius:50%;border:2px solid var(--accent);display:inline-block}
 .week i.on{background:var(--accent)}
@@ -227,7 +232,7 @@ button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--ac
 
 <div class="wrap">
   <header class="hero">
-    <div class="eyebrow">Fat loss + muscle · 3 gym nights · Iraqi food</div>
+    <div class="eyebrow">Fat loss + muscle · gym every other night · Iraqi food</div>
     <h1 class="big num">82 <span class="arrow">→</span> 75 <span class="unit">kg</span></h1>
     <p class="muted">Expect about 0.5 kg a week on the scale at first, then slower. That's about 3–4 months. Judge progress by your waist and photos too, not only the scale.</p>
   </header>
@@ -251,7 +256,7 @@ button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--ac
         <div class="stat"><b>~2,000</b><span>kcal a day (you burn about 2,400)</span></div>
         <div class="stat"><b>~140 g</b><span>protein: a palm of meat, chicken, eggs or tuna at every meal</span></div>
         <div class="stat"><b>2.5–3 L</b><span>water a day</span></div>
-        <div class="stat"><b>3 nights</b><span>gym: Saturday, Monday, Wednesday</span></div>
+        <div class="stat"><b>Every 2nd night</b><span>gym one night, rest the next: 3–4 times a week</span></div>
       </div>
     </section>
 
@@ -259,7 +264,7 @@ button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--ac
       <h2>Start one thing at a time</h2>
       <p class="lead">Changing everything at once is how people quit. Add one new habit each week and keep the old ones.</p>
       <ol class="steps">
-        <li><div><h3>Week 1: drinks and gym</h3><p class="muted">Swap every cola and energy drink for zero sugar. Go to the gym 3 nights. Only 2 sets per exercise, light weights.</p></div></li>
+        <li><div><h3>Week 1: drinks and gym</h3><p class="muted">Swap every cola and energy drink for zero sugar. Gym every other night. Only 2 sets per exercise, light weights.</p></div></li>
         <li><div><h3>Week 2: protein</h3><p class="muted">A palm of protein at every meal. Move up to 3 sets per exercise.</p></div></li>
         <li><div><h3>Week 3: fast food</h3><p class="muted">Down to 2 nights a week, ordered the smart way (see Food).</p></div></li>
         <li><div><h3>Week 4: walking</h3><p class="muted">15 minutes after lunch or dinner on rest days. Slowly build toward 7,000–8,000 steps a day.</p></div></li>
@@ -318,13 +323,14 @@ button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--ac
         <span class="chip">Top reps on every set → add the smallest weight next time</span>
         <span class="chip">Weeks 1–2: 2 sets, light</span>
       </div>
-      <div class="note green"><b>Rotation, not weekdays</b>Alternate A and B: A, B, A one week, then B, A, B the next. Press <strong>Finish workout</strong> at the end and this page switches to the next one, so a missed night just moves the plan forward instead of breaking it.</div>
+      <div class="note green"><b>Train, rest, train, rest</b>Gym one night, rest the next, and alternate A and B: A, rest, B, rest, A, rest… Your gym nights move around the week, so the box below tells you if tonight is a gym night or a rest night. Press <strong>Finish workout</strong> at the end and it switches to the next workout.</div>
     </section>
 
     <section>
       <div class="today" id="today">
         <span class="eyebrow">Next workout</span>
         <span class="next" id="nextW">Workout A</span>
+        <span class="when" id="when"></span>
         <span class="meta" id="lastLine">No workouts saved yet.</span>
         <span class="week" id="week" aria-label="Workouts this week"></span>
         <span class="nudge" id="nudge"></span>
@@ -507,6 +513,7 @@ button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--ac
       <div class="note red"><b>Neck rule</b>Symptoms only above the neck (runny nose, light sore throat): a light workout is OK. Below the neck (fever, body aches, cough): rest.</div>
       <ul class="plain">
         <li><b>First workout back:</b> a half workout, 2 sets with lighter weights.</li>
+        <li><b>Missed a gym night?</b> Go the next night instead, then carry on train-rest from there.</li>
         <li><b>Never miss twice in a row.</b> After one missed night, the next session happens, even as a mini workout.</li>
         <li><b>Mini workout (20 min):</b> the first 3 exercises, 2 sets each, no cardio.</li>
         <li><b>Bored?</b> Try to beat last time's weight in the kg box. After 8 weeks, switch 1–2 exercises to their Swap.</li>
@@ -695,6 +702,7 @@ button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--ac
   function key(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
   function parse(k){ var p = k.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function gymDay(){ return key(new Date(Date.now() - 4 * 3600 * 1000)); }
+  function addDays(k, n){ var d = parse(k); d.setDate(d.getDate() + n); return key(d); }
   function daysBetween(a, b){ return Math.round((parse(b) - parse(a)) / 86400000); }
   function weekStart(k){ var d = parse(k); d.setDate(d.getDate() - ((d.getDay() + 1) % 7)); return key(d); } // week starts Saturday
   function nice(k){ return parse(k).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); }
@@ -749,25 +757,33 @@ button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--ac
 
     var lastLine = document.getElementById('lastLine');
     var nudge = document.getElementById('nudge');
+    var when = document.getElementById('when');
+    var rest = false;
     if (!last) {
+      when.textContent = 'Gym night: start tonight';
       lastLine.textContent = 'No workouts saved yet. Tick sets as you go, then press Finish workout.';
       nudge.textContent = '';
     } else {
+      // Train, rest, train, rest: the next gym night is 2 days after the last workout.
       var gap = daysBetween(last.d, today);
+      if (gap <= 0) { rest = true; when.textContent = 'Done tonight. Rest tomorrow, gym again ' + nice(addDays(last.d, 2)) + '.'; }
+      else if (gap === 1) { rest = true; when.textContent = 'Rest night tonight: a 15–20 minute walk. Gym tomorrow.'; }
+      else when.textContent = 'Gym night: go tonight';
       lastLine.textContent = 'Last: Workout ' + last.w + ', ' + nice(last.d) + ' (' + ago(gap) + ')';
       nudge.textContent = gap >= 3 ? "It's been " + gap + ' days. Never miss twice: go tonight, even for the 20-minute mini workout.' : '';
     }
+    document.getElementById('today').classList.toggle('rest', rest);
 
     var ws = weekStart(today);
     var n = st.log.filter(function(e){ return weekStart(e.d) === ws; }).length;
     var week = document.getElementById('week');
     week.innerHTML = '';
-    for (var i = 0; i < Math.max(3, n); i++) {
+    for (var i = 0; i < Math.max(4, n); i++) {
       var dot = document.createElement('i');
-      if (i < n) dot.className = 'on';
+      if (i < n) dot.className = 'on'; else if (i === 3) dot.className = 'extra';
       week.appendChild(dot);
     }
-    week.appendChild(document.createTextNode(' This week: ' + n + ' of 3'));
+    week.appendChild(document.createTextNode(' This week: ' + n + ' of 3–4'));
 
     var box = document.getElementById('logbox');
     var list = document.getElementById('log');
@@ -803,7 +819,7 @@ button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--ac
     st.log.push({ d: gymDay(), w: w, done: done, total: boxes.length, kg: kg });
     Array.prototype.forEach.call(boxes, function(cb){ cb.checked = false; delete st.ticks[cb.id]; });
     pick(other(w));
-    if (save(false)) say('Workout ' + w + ' saved (' + done + ' of ' + boxes.length + ' sets). Next time: Workout ' + other(w) + '.', false, true);
+    if (save(false)) say('Workout ' + w + ' saved (' + done + ' of ' + boxes.length + ' sets). Rest tomorrow, then Workout ' + other(w) + '.', false, true);
     render();
     document.getElementById('today').scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
