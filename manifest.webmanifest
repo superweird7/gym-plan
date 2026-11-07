@@ -1,0 +1,23 @@
+{
+  "name": "82 → 75 Plan",
+  "short_name": "Gym Plan",
+  "description": "Workout A/B, form videos, swaps and Iraqi meal plan.",
+  "start_url": "./#workout",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F2F4F1",
+  "theme_color": "#B3263E",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

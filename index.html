@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Workout A/B with form videos, swaps and auto-saved ticks, plus an Iraqi meal plan.">
+<meta name="theme-color" content="#F2F4F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101412" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gym Plan">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>82 → 75 Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one narrow phone-first column, sticky tab bar; cards only for exercises and meal slots */
+:root{
+  --bg:#F2F4F1; --surface:#FFFFFF; --fg:#17201B; --muted:#5C6861; --line:#D8DED9;
+  --accent:#B3263E; --accent-soft:#F6E3E6; --on-accent:#FFFFFF;
+  --amber:#8F5A0C; --amber-soft:#F5EAD8; --green:#2B6F44; --green-soft:#E1EFE5;
+  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans","IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-ar:"IBM Plex Sans Arabic","Noto Sans Arabic",Tahoma,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101412; --surface:#191F1B; --fg:#E6EBE7; --muted:#9AA59F; --line:#2B342F;
+    --accent:#EE6A7F; --accent-soft:#3A1C22; --on-accent:#1B0B0F;
+    --amber:#E2A750; --amber-soft:#36290F; --green:#6CC38D; --green-soft:#173222;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101412; --surface:#191F1B; --fg:#E6EBE7; --muted:#9AA59F; --line:#2B342F;
+  --accent:#EE6A7F; --accent-soft:#3A1C22; --on-accent:#1B0B0F;
+  --amber:#E2A750; --amber-soft:#36290F; --green:#6CC38D; --green-soft:#173222;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:680px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+.ar{font-family:var(--font-ar);font-weight:500}
+h1,h2{font-family:var(--font-display);text-wrap:balance;margin:0}
+h2{font-size:1.75rem;line-height:1.1;letter-spacing:.01em;text-transform:uppercase}
+h3{font-size:1.05rem;line-height:1.3;margin:0}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* Hero */
+header.hero{padding-block:28px 18px;display:grid;gap:10px}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.big{font-family:var(--font-display);font-weight:700;font-size:clamp(3.4rem,14vw,5.25rem);line-height:.9;letter-spacing:-.01em;display:flex;align-items:baseline;gap:.18em;flex-wrap:wrap}
+.big .arrow{color:var(--accent)}
+.big .unit{font-size:.38em;color:var(--muted);font-weight:600}
+.hero p{max-width:52ch}
+
+/* Tabs */
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:4px}
+nav.tabs a{flex:1;text-align:center;text-decoration:none;color:var(--muted);font-family:var(--font-display);font-weight:600;font-size:1.15rem;letter-spacing:.06em;text-transform:uppercase;padding:12px 4px 10px;border-bottom:3px solid transparent}
+nav.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
+
+main{padding-block:22px 56px}
+.view{display:grid;gap:34px}
+section{display:grid;gap:14px}
+.lead{color:var(--muted);max-width:60ch}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:2px;min-width:0}
+.stat b{font-family:var(--font-display);font-size:1.9rem;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{font-size:.85rem;color:var(--muted)}
+
+/* Ordered steps */
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
+ol.steps li{display:grid;grid-template-columns:2.2rem 1fr;gap:10px;align-items:start;counter-increment:s}
+ol.steps li::before{content:counter(s);font-family:var(--font-display);font-weight:700;font-size:1.3rem;width:2.2rem;height:2.2rem;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+ol.steps li > div{min-width:0;padding-top:3px}
+
+/* Timeline */
+ul.day{list-style:none;margin:0;padding:0;border-left:2px solid var(--line);display:grid;gap:12px;margin-left:4px}
+ul.day li{display:grid;grid-template-columns:3.6rem 1fr;gap:10px;padding-left:14px;position:relative}
+ul.day li::before{content:"";position:absolute;left:-6px;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--muted)}
+ul.day li.gym::before{background:var(--accent);border-color:var(--accent)}
+ul.day time{font-family:var(--font-display);font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
+ul.day li > div{min-width:0}
+
+ul.plain{margin:0;padding-left:1.15rem;display:grid;gap:8px}
+.note{background:var(--amber-soft);border-radius:10px;padding:12px 14px;font-size:.95rem}
+.note.green{background:var(--green-soft)}
+.note.red{background:var(--accent-soft)}
+.note b{display:block;margin-bottom:2px}
+
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:.875rem}
+
+/* Workout toggle */
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{font:inherit;font-family:var(--font-display);font-weight:600;font-size:1.15rem;letter-spacing:.04em;text-transform:uppercase;border:0;background:transparent;color:var(--muted);padding:8px 18px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+button.ghost{font:inherit;font-size:.875rem;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:7px 12px;cursor:pointer}
+.exlist{display:grid;gap:10px}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:8px}
+.ex-head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline}
+.ex-n{font-family:var(--font-display);font-weight:700;color:var(--accent);font-size:1.3rem;line-height:1}
+.dose{font-family:var(--font-display);font-weight:700;font-size:1.3rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cue{color:var(--muted);font-size:.93rem}
+.sets{display:flex;gap:8px;flex-wrap:wrap}
+.sets label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:.875rem;cursor:pointer;user-select:none}
+.sets input{width:18px;height:18px;accent-color:var(--accent);margin:0}
+.sets label:has(input:checked){background:var(--accent-soft);border-color:var(--accent)}
+.mus{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--green);margin-top:-4px}
+.vid{display:inline-flex;align-items:center;gap:7px;justify-self:start;min-height:38px;padding:7px 12px;border:1px solid var(--accent);border-radius:8px;color:var(--accent);font-size:.875rem;font-weight:600;text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap}
+.vid svg{width:10px;height:10px;fill:currentColor;flex:none}
+.vid.sm{min-height:32px;padding:4px 10px}
+.vid:hover{background:var(--accent-soft)}
+.tag{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;flex:none}
+.alt{border-top:1px dashed var(--line);padding-top:10px;display:grid;gap:4px}
+.alt-top,.b-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px}
+.alt-top b{font-weight:600;min-width:0}
+.demo{margin:0;display:grid;gap:4px;justify-items:center}
+.demo .frames{position:relative;height:190px;max-width:100%}
+.demo.sm .frames{height:92px}
+.demo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;animation:flip-a 2.4s infinite}
+.demo img + img{animation-name:flip-b}
+@keyframes flip-a{0%,46%{opacity:1}54%,100%{opacity:0}}
+@keyframes flip-b{0%,46%{opacity:0}54%,100%{opacity:1}}
+.demo figcaption{font-size:.75rem;color:var(--muted)}
+.alt-body{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .demo img{filter:invert(.9)}}
+:root[data-theme="dark"] .demo img{filter:invert(.9)}
+@media (prefers-reduced-motion: reduce){.demo .frames{display:grid;grid-template-columns:1fr 1fr;gap:6px;aspect-ratio:auto!important;height:auto}.demo img{position:static;height:150px;animation:none}.demo.sm img{height:80px}}
+.bonus{display:grid;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.bonus-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.bonus-list li{display:grid;gap:6px}
+.bonus-list li + li{border-top:1px solid var(--line);padding-top:12px}
+.dose-sm{font-family:var(--font-display);font-weight:700;font-size:1.1rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* Tables */
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td:first-child{font-weight:600;white-space:nowrap}
+
+/* Plate */
+.plate{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center}
+.plate .disc{width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--green) 0 50%, var(--accent) 50% 75%, var(--amber) 75% 100%);border:6px solid var(--surface);outline:1px solid var(--line)}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:8px;min-width:0}
+.legend li{display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start}
+.legend i{width:14px;height:14px;border-radius:4px;margin-top:5px}
+.i-green{background:var(--green)} .i-red{background:var(--accent)} .i-amber{background:var(--amber)}
+
+/* Meals */
+.meal{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.meal-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.meal-head h3{font-family:var(--font-display);font-size:1.4rem;text-transform:uppercase;letter-spacing:.03em}
+.meal-head span{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.opts{list-style:none;margin:0;padding:0}
+.opts li{padding:11px 14px;border-bottom:1px solid var(--line);display:grid;gap:3px}
+.opts li:last-child{border-bottom:0}
+.opt-name{font-weight:600}
+.opt-name .ar{font-weight:500;color:var(--muted);margin-inline-start:6px}
+.opt-fig{font-size:.85rem;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
+
+.rank{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.rank li{display:grid;grid-template-columns:4.2rem 1fr;gap:10px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tag{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-radius:6px;padding:3px 0;text-align:center}
+.tag.best{background:var(--green-soft);color:var(--green)}
+.tag.ok{background:var(--amber-soft);color:var(--amber)}
+.tag.worst{background:var(--accent-soft);color:var(--accent)}
+.rank li > div{min-width:0}
+
+.free{display:flex;flex-wrap:wrap;gap:8px}
+.free span{background:var(--green-soft);color:var(--fg);border-radius:8px;padding:5px 10px;font-size:.9rem}
+.free .ar{color:var(--green);margin-inline-start:4px}
+
+footer{padding-block:0 40px;color:var(--muted);font-size:.8rem}
+
+@media (max-width:420px){
+  .plate{grid-template-columns:1fr;justify-items:start}
+  td:first-child{white-space:normal}
+}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Saving, rotation and log */
+.today{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;display:grid;gap:6px}
+.today .next{font-family:var(--font-display);font-weight:700;font-size:2.1rem;line-height:1;text-transform:uppercase;letter-spacing:.01em}
+.today .meta{color:var(--muted);font-size:.93rem}
+.week{display:flex;align-items:center;gap:6px;font-size:.875rem;color:var(--muted)}
+.week i{width:12px;height:12px;border-radius:50%;border:2px solid var(--accent);display:inline-block}
+.week i.on{background:var(--accent)}
+.nudge{color:var(--accent);font-weight:600;font-size:.93rem}
+.nudge:empty{display:none}
+.sets .kg{gap:4px;color:var(--muted);cursor:text}
+.sets .kg input{width:3.6em;height:auto;font:inherit;font-size:.9rem;font-variant-numeric:tabular-nums;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 6px;text-align:right;accent-color:auto}
+.finish{display:grid;gap:8px}
+button.primary{font:inherit;font-family:var(--font-display);font-weight:700;font-size:1.35rem;letter-spacing:.05em;text-transform:uppercase;background:var(--accent);color:var(--on-accent);border:0;border-radius:10px;min-height:52px;padding:10px 18px;cursor:pointer}
+.status{font-size:.875rem;color:var(--green);min-height:1.4em}
+.status.bad{color:var(--accent)}
+.logbox{display:grid;gap:8px}
+.logbox h3{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+ol.log{list-style:none;margin:0;padding:0;display:grid;gap:0;font-size:.93rem}
+ol.log li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+ol.log li:last-child{border-bottom:0}
+ol.log .w{font-weight:600}
+ol.log .n{font-variant-numeric:tabular-nums;color:var(--muted)}
+button.link{font:inherit;font-size:.8rem;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:4px}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Fat loss + muscle · 3 gym nights · Iraqi food</div>
+    <h1 class="big num">82 <span class="arrow">→</span> 75 <span class="unit">kg</span></h1>
+    <p class="muted">Expect about 0.5 kg a week on the scale at first, then slower. That's about 3–4 months. Judge progress by your waist and photos too, not only the scale.</p>
+  </header>
+</div>
+
+<nav class="tabs" aria-label="Plan sections">
+  <div class="wrap">
+    <a href="#start" data-tab="start" aria-current="page">Start</a>
+    <a href="#workout" data-tab="workout">Workout</a>
+    <a href="#food" data-tab="food">Food</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ============ START ============ -->
+  <div class="view" id="v-start">
+    <section>
+      <h2>Daily targets</h2>
+      <div class="stats">
+        <div class="stat"><b>~2,000</b><span>kcal a day (you burn about 2,400)</span></div>
+        <div class="stat"><b>~140 g</b><span>protein: a palm of meat, chicken, eggs or tuna at every meal</span></div>
+        <div class="stat"><b>2.5–3 L</b><span>water a day</span></div>
+        <div class="stat"><b>3 nights</b><span>gym: Saturday, Monday, Wednesday</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Start one thing at a time</h2>
+      <p class="lead">Changing everything at once is how people quit. Add one new habit each week and keep the old ones.</p>
+      <ol class="steps">
+        <li><div><h3>Week 1: drinks and gym</h3><p class="muted">Swap every cola and energy drink for zero sugar. Go to the gym 3 nights. Only 2 sets per exercise, light weights.</p></div></li>
+        <li><div><h3>Week 2: protein</h3><p class="muted">A palm of protein at every meal. Move up to 3 sets per exercise.</p></div></li>
+        <li><div><h3>Week 3: fast food</h3><p class="muted">Down to 2 nights a week, ordered the smart way (see Food).</p></div></li>
+        <li><div><h3>Week 4: walking</h3><p class="muted">15 minutes after lunch or dinner on rest days. Slowly build toward 7,000–8,000 steps a day.</p></div></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Your day</h2>
+      <ul class="day">
+        <li><time>8:30</time><div>Wake up. Big glass of water.</div></li>
+        <li><time>9:00</time><div>Breakfast</div></li>
+        <li><time>1:30</time><div>Lunch at work</div></li>
+        <li><time>6:00</time><div>Dinner at home</div></li>
+        <li><time>7:00</time><div>Nap, 3 hours max</div></li>
+        <li><time>10:00</time><div>Wake up. Water and pre-gym snack. Give yourself 20–30 minutes before training so you're not groggy.</div></li>
+        <li class="gym"><time>10:45</time><div><b>Gym nights:</b> about 60 minutes.<br><span class="muted">Rest nights: 15–20 minute walk.</span></div></li>
+        <li><time>12:00</time><div>After-gym meal</div></li>
+        <li><time>1:30</time><div>Sleep. Aim for at least 6.5 hours.</div></li>
+      </ul>
+      <p class="small muted">Your old 3–4 am bedtime can work too. What matters most is the same times every day and 7–9 hours of total sleep (nap + night).</p>
+    </section>
+
+    <section>
+      <h2>Every Friday: check progress</h2>
+      <ul class="plain">
+        <li>Weigh yourself 3 mornings a week, after the toilet and before food. Compare weekly averages, not single days.</li>
+        <li>Measure your waist at the belly button once a week.</li>
+        <li>Every 2 weeks: a front and side photo, same mirror, same light.</li>
+        <li>Weekly average didn't drop for 2 weeks? Remove one bread or rice portion a day, or add 2,000 steps.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>See a doctor if</h2>
+      <ul class="plain">
+        <li>You're still very tired after 4 weeks of zero-sugar drinks and steady sleep.</li>
+        <li>You feel a firm, rubbery lump behind a nipple, or it hurts.</li>
+        <li>You keep getting sick. Ask for vitamin D, iron, thyroid and testosterone tests.</li>
+      </ul>
+      <p class="small muted">This is general fitness guidance, not medical advice.</p>
+    </section>
+  </div>
+
+  <!-- ============ WORKOUT ============ -->
+  <div class="view" id="v-workout" hidden>
+    <section>
+      <h2>How every session works</h2>
+      <ol class="steps">
+        <li><div><h3>Warm up · 5 min</h3><p class="muted">Easy bike or walk, then 1 light set of the first exercise.</p></div></li>
+        <li><div><h3>Lift · about 40 min</h3><p class="muted">The 5 exercises below, in order.</p></div></li>
+        <li><div><h3>Finish · 10–15 min</h3><p class="muted">Incline walk (incline 4–6, speed 4–5 km/h) or bike. Weeks 1–2: 10 minutes. Cardio always comes last, never before lifting.</p></div></li>
+      </ol>
+      <div class="chips">
+        <span class="chip">Rest 2 min between sets</span>
+        <span class="chip">Stop each set with 1–3 reps left</span>
+        <span class="chip">Top reps on every set → add the smallest weight next time</span>
+        <span class="chip">Weeks 1–2: 2 sets, light</span>
+      </div>
+      <div class="note green"><b>Rotation, not weekdays</b>Alternate A and B: A, B, A one week, then B, A, B the next. Press <strong>Finish workout</strong> at the end and this page switches to the next one, so a missed night just moves the plan forward instead of breaking it.</div>
+    </section>
+
+    <section>
+      <div class="today" id="today">
+        <span class="eyebrow">Next workout</span>
+        <span class="next" id="nextW">Workout A</span>
+        <span class="meta" id="lastLine">No workouts saved yet.</span>
+        <span class="week" id="week" aria-label="Workouts this week"></span>
+        <span class="nudge" id="nudge"></span>
+      </div>
+      <div class="note"><b>Drawings, videos and swaps</b>Each drawing loops between the start and the end of the move. Tap <strong>Form video</strong> before you try an exercise for the first time. Watching one workout's 5 videos takes about 12 minutes. Machine busy or missing? Use the <strong>Swap</strong> under the exercise. It works the same muscles.</div>
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="Choose workout">
+          <button type="button" id="btnA" aria-pressed="true">Workout A</button>
+          <button type="button" id="btnB" aria-pressed="false">Workout B</button>
+        </div>
+        <button type="button" class="ghost" id="clear">Clear ticks</button>
+      </div>
+
+      <div class="exlist" id="wA">
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">1</span><h3>Leg press</h3><span class="dose">3 × 10–15</span></div>
+          <p class="mus">Quads · glutes</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:996/687"><img src="img/0127-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0127-b.webp" alt="Leg press: start and end position, drawn" loading="lazy" decoding="async"></div></figure>
+          <p class="cue">Feet shoulder-width on the platform. Lower until your knees are at about 90°. Don't lock your knees at the top.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=K5n2vg3oZa4" target="_blank" rel="noopener" aria-label="Leg press form video on YouTube, 3:48"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 3:48</a>
+          <div class="sets"><label><input type="checkbox" id="A1s1">Set 1</label><label><input type="checkbox" id="A1s2">Set 2</label><label><input type="checkbox" id="A1s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="A1kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>Hack squat</b><a class="vid sm" href="https://www.youtube.com/watch?v=0tn5K9NlCfo" target="_blank" rel="noopener" aria-label="Hack squat form video on YouTube, 1:23"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>1:23</a></div>
+            <div class="alt-body"><figure class="demo sm"><div class="frames" style="aspect-ratio:934/653"><img src="img/0123-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0123-b.webp" alt="Hack squat: start and end position, drawn" loading="lazy" decoding="async"></div></figure><p class="cue small">Feet in the middle of the platform. Same depth: knees at about 90°.</p></div>
+          </div>
+        </article>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">2</span><h3>Low-incline dumbbell press</h3><span class="dose">3 × 10–15</span></div>
+          <p class="mus">Upper chest · shoulders · triceps</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:783/950"><img src="img/0080-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0080-b.webp" alt="Low-incline dumbbell press: start and end position, drawn" loading="lazy" decoding="async"></div></figure>
+          <p class="cue">Bench at a low incline (15–30°). Elbows about 45° from your body. Your main chest builder.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=IP4oeKh1Sd4" target="_blank" rel="noopener" aria-label="Low-incline dumbbell press form video on YouTube, 2:00"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 2:00</a>
+          <div class="sets"><label><input type="checkbox" id="A2s1">Set 1</label><label><input type="checkbox" id="A2s2">Set 2</label><label><input type="checkbox" id="A2s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="A2kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>Incline Smith machine press</b><a class="vid sm" href="https://www.youtube.com/watch?v=EeLLZMdg6zI" target="_blank" rel="noopener" aria-label="Incline Smith machine press form video on YouTube, 1:22"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>1:22</a></div>
+            <div class="alt-body"><figure class="demo sm"><div class="frames" style="aspect-ratio:789/1020"><img src="img/0081-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0081-b.webp" alt="Incline Smith machine press: start and end position, drawn" loading="lazy" decoding="async"></div></figure><p class="cue small">Bench at 15–30°. Lower the bar to your upper chest.</p></div>
+          </div>
+        </article>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">3</span><h3>Lat pulldown</h3><span class="dose">3 × 10–12</span></div>
+          <p class="mus">Lats (back width) · biceps</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:634/960"><img src="img/wide-grip-lat-pull-down-a.webp" alt="" loading="lazy" decoding="async"><img src="img/wide-grip-lat-pull-down-b.webp" alt="Lat pulldown: start and end position, drawn" loading="lazy" decoding="async"></div></figure>
+          <p class="cue">Pull the bar to your upper chest. Keep your chest up and don't swing back.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=43hWj8mfYGY" target="_blank" rel="noopener" aria-label="Lat pulldown form video on YouTube, 2:00"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 2:00</a>
+          <div class="sets"><label><input type="checkbox" id="A3s1">Set 1</label><label><input type="checkbox" id="A3s2">Set 2</label><label><input type="checkbox" id="A3s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="A3kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>Assisted pull-up machine</b><a class="vid sm" href="https://www.youtube.com/watch?v=wFj808u2HWU" target="_blank" rel="noopener" aria-label="Assisted pull-up machine form video on YouTube, 1:12"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>1:12</a></div>
+            <p class="cue small">More counterweight makes it easier. Pull your chest up toward the bar.</p>
+          </div>
+        </article>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">4</span><h3>Seated leg curl</h3><span class="dose">3 × 10–15</span></div>
+          <p class="mus">Hamstrings</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:593/858"><img src="img/0119-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0119-b.webp" alt="Seated leg curl: start and end position, drawn" loading="lazy" decoding="async"></div></figure>
+          <p class="cue">Curl in one smooth move, then return slowly over about 2 seconds.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=ELOCsoDSmrg" target="_blank" rel="noopener" aria-label="Seated leg curl form video on YouTube, 3:10"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 3:10</a>
+          <div class="sets"><label><input type="checkbox" id="A4s1">Set 1</label><label><input type="checkbox" id="A4s2">Set 2</label><label><input type="checkbox" id="A4s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="A4kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>Lying leg curl</b><a class="vid sm" href="https://www.youtube.com/watch?v=jxctD6fL_FQ" target="_blank" rel="noopener" aria-label="Lying leg curl form video on YouTube, 0:51"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>0:51</a></div>
+            <div class="alt-body"><figure class="demo sm"><div class="frames" style="aspect-ratio:963/554"><img src="img/0117-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0117-b.webp" alt="Lying leg curl: start and end position, drawn" loading="lazy" decoding="async"></div></figure><p class="cue small">Keep your hips pressed into the pad the whole time.</p></div>
+          </div>
+        </article>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">5</span><h3>Dumbbell lateral raise</h3><span class="dose">3 × 12–20</span></div>
+          <p class="mus">Side shoulders</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:878/919"><img src="img/0018-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0018-b.webp" alt="Dumbbell lateral raise: start and end position, drawn" loading="lazy" decoding="async"></div></figure>
+          <p class="cue">Light weights. Raise to shoulder height with a slight bend in your elbows.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=PzsMitRdI_8" target="_blank" rel="noopener" aria-label="Dumbbell lateral raise form video on YouTube, 2:01"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 2:01</a>
+          <div class="sets"><label><input type="checkbox" id="A5s1">Set 1</label><label><input type="checkbox" id="A5s2">Set 2</label><label><input type="checkbox" id="A5s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="A5kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>Cable lateral raise</b><a class="vid sm" href="https://www.youtube.com/watch?v=qitQHqNZbeM" target="_blank" rel="noopener" aria-label="Cable lateral raise form video on YouTube, 2:57"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>2:57</a></div>
+            <p class="cue small">One arm at a time, with the cable set at hand height.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="exlist" id="wB" hidden>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">1</span><h3>Goblet squat</h3><span class="dose">3 × 10–15</span></div>
+          <p class="mus">Quads · glutes</p>
+          <p class="cue">Hold one dumbbell against your chest. Sit down between your heels with your chest up.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=MeIiIdhvXT4" target="_blank" rel="noopener" aria-label="Goblet squat form video on YouTube, 3:12"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 3:12</a>
+          <div class="sets"><label><input type="checkbox" id="B1s1">Set 1</label><label><input type="checkbox" id="B1s2">Set 2</label><label><input type="checkbox" id="B1s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="B1kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>Smith machine squat</b><a class="vid sm" href="https://www.youtube.com/watch?v=AHnX-aimA4E" target="_blank" rel="noopener" aria-label="Smith machine squat form video on YouTube, 2:16"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>2:16</a></div>
+            <div class="alt-body"><figure class="demo sm"><div class="frames" style="aspect-ratio:924/899"><img src="img/0124-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0124-b.webp" alt="Smith machine squat: start and end position, drawn" loading="lazy" decoding="async"></div></figure><p class="cue small">Feet a little in front of the bar. Sit down until your thighs are about level with the floor.</p></div>
+          </div>
+        </article>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">2</span><h3>Machine chest press</h3><span class="dose">3 × 8–12</span></div>
+          <p class="mus">Chest · triceps</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:803/931"><img src="img/0066-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0066-b.webp" alt="Machine chest press: start and end position, drawn" loading="lazy" decoding="async"></div></figure>
+          <p class="cue">Use the incline version if your gym has one. Lower the weight under control.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=xUm0BiZCWlQ" target="_blank" rel="noopener" aria-label="Machine chest press form video on YouTube, 2:38"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 2:38</a>
+          <div class="sets"><label><input type="checkbox" id="B2s1">Set 1</label><label><input type="checkbox" id="B2s2">Set 2</label><label><input type="checkbox" id="B2s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="B2kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>Dumbbell bench press</b><a class="vid sm" href="https://www.youtube.com/watch?v=VmB1G1K7v94" target="_blank" rel="noopener" aria-label="Dumbbell bench press form video on YouTube, 2:11"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>2:11</a></div>
+            <div class="alt-body"><figure class="demo sm"><div class="frames" style="aspect-ratio:847/950"><img src="img/0055-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0055-b.webp" alt="Dumbbell bench press: start and end position, drawn" loading="lazy" decoding="async"></div></figure><p class="cue small">Flat bench. Elbows about 45° from your body.</p></div>
+          </div>
+        </article>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">3</span><h3>Seated cable row</h3><span class="dose">3 × 10–15</span></div>
+          <p class="mus">Mid back · lats · biceps</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:897/614"><img src="img/0025-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0025-b.webp" alt="Seated cable row: start and end position, drawn" loading="lazy" decoding="async"></div></figure>
+          <p class="cue">Pull to your belly and squeeze your shoulder blades together.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=vwHG9Jfu4sw" target="_blank" rel="noopener" aria-label="Seated cable row form video on YouTube, 2:00"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 2:00</a>
+          <div class="sets"><label><input type="checkbox" id="B3s1">Set 1</label><label><input type="checkbox" id="B3s2">Set 2</label><label><input type="checkbox" id="B3s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="B3kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>One-arm dumbbell row</b><a class="vid sm" href="https://www.youtube.com/watch?v=dFzUjzfih7k" target="_blank" rel="noopener" aria-label="One-arm dumbbell row form video on YouTube, 2:00"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>2:00</a></div>
+            <p class="cue small">One knee and one hand on the bench. Pull the dumbbell toward your hip.</p>
+          </div>
+        </article>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">4</span><h3>Dumbbell Romanian deadlift</h3><span class="dose">3 × 10–12</span></div>
+          <p class="mus">Hamstrings · glutes</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:708/883"><img src="img/0118-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0118-b.webp" alt="Dumbbell Romanian deadlift: start and end position, drawn" loading="lazy" decoding="async"></div><figcaption>Drawn with a barbell. Same move with dumbbells.</figcaption></figure>
+          <p class="cue">Soft knees, push your hips back, keep your back flat. Stop when you feel a stretch in the back of your legs.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=hQgFixeXdZo" target="_blank" rel="noopener" aria-label="Dumbbell Romanian deadlift form video on YouTube, 1:19"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 1:19</a>
+          <div class="sets"><label><input type="checkbox" id="B4s1">Set 1</label><label><input type="checkbox" id="B4s2">Set 2</label><label><input type="checkbox" id="B4s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="B4kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>45° back extension</b><a class="vid sm" href="https://www.youtube.com/watch?v=OMb1VFQK9Tk" target="_blank" rel="noopener" aria-label="45° back extension form video on YouTube, 2:11"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>2:11</a></div>
+            <div class="alt-body"><figure class="demo sm"><div class="frames" style="aspect-ratio:772/888"><img src="img/0103-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0103-b.webp" alt="45° back extension: start and end position, drawn" loading="lazy" decoding="async"></div></figure><p class="cue small">Bend at your hips, then squeeze your glutes to come up. Don't arch your back at the top.</p></div>
+          </div>
+        </article>
+        <article class="ex">
+          <div class="ex-head"><span class="ex-n">5</span><h3>Pec deck (machine fly)</h3><span class="dose">3 × 12–15</span></div>
+          <p class="mus">Chest</p>
+          <figure class="demo"><div class="frames" style="aspect-ratio:659/960"><img src="img/butterfly-machine-a.webp" alt="" loading="lazy" decoding="async"><img src="img/butterfly-machine-b.webp" alt="Pec deck (machine fly): start and end position, drawn" loading="lazy" decoding="async"></div></figure>
+          <p class="cue">Extra chest work. Squeeze slowly, return slowly.</p>
+          <a class="vid" href="https://www.youtube.com/watch?v=3jYo5cMU3d4" target="_blank" rel="noopener" aria-label="Pec deck (machine fly) form video on YouTube, 2:48"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Form video · 2:48</a>
+          <div class="sets"><label><input type="checkbox" id="B5s1">Set 1</label><label><input type="checkbox" id="B5s2">Set 2</label><label><input type="checkbox" id="B5s3">Set 3</label><label class="kg"><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" id="B5kg" aria-label="Weight used, kg">kg</label></div>
+          <div class="alt">
+            <div class="alt-top"><span class="tag">Swap</span><b>Cable fly</b><a class="vid sm" href="https://www.youtube.com/watch?v=WEM9FCIPlxQ" target="_blank" rel="noopener" aria-label="Cable fly form video on YouTube, 1:54"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>1:54</a></div>
+            <div class="alt-body"><figure class="demo sm"><div class="frames" style="aspect-ratio:938/1018"><img src="img/0048-a.webp" alt="" loading="lazy" decoding="async"><img src="img/0048-b.webp" alt="Cable fly: start and end position, drawn" loading="lazy" decoding="async"></div></figure><p class="cue small">Cables at chest height. Arms slightly bent, bring your hands together in front of your chest.</p></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="bonus">
+        <p class="small"><b>Bonus, only if you have energy left.</b> <span class="muted">Do the curl and the pushdown back to back.</span></p>
+        <ul class="bonus-list">
+          <li>
+            <div class="b-row"><b>Biceps curl</b><span class="dose-sm">2 × 12</span><a class="vid sm" href="https://www.youtube.com/watch?v=av7-8igSXTs" target="_blank" rel="noopener" aria-label="Biceps curl form video on YouTube, 1:42"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>1:42</a></div>
+            <div class="b-row"><span class="tag">Swap</span><span>Hammer curl</span><a class="vid sm" href="https://www.youtube.com/watch?v=zC3nLlEvin4" target="_blank" rel="noopener" aria-label="Hammer curl form video on YouTube, 2:03"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>2:03</a></div>
+          </li>
+          <li>
+            <div class="b-row"><b>Triceps pushdown</b><span class="dose-sm">2 × 12</span><a class="vid sm" href="https://www.youtube.com/watch?v=-zLyUAo1gMw" target="_blank" rel="noopener" aria-label="Triceps pushdown form video on YouTube, 2:00"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>2:00</a></div>
+            <div class="b-row"><span class="tag">Swap</span><span>Overhead cable extension</span><a class="vid sm" href="https://www.youtube.com/watch?v=ns-RGsbzqok" target="_blank" rel="noopener" aria-label="Overhead cable extension form video on YouTube, 0:43"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>0:43</a></div>
+          </li>
+          <li>
+            <div class="b-row"><b>Plank</b><span class="dose-sm">2 × 20–30 s</span><a class="vid sm" href="https://www.youtube.com/watch?v=pSHjTRCQxIw" target="_blank" rel="noopener" aria-label="Plank form video on YouTube, 1:17"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>1:17</a></div>
+            <div class="b-row"><span class="tag">Swap</span><span>Dead bug</span><a class="vid sm" href="https://www.youtube.com/watch?v=GbSC02oU3To" target="_blank" rel="noopener" aria-label="Dead bug form video on YouTube, 1:13"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>1:13</a></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="finish">
+        <button type="button" class="primary" id="finish">Finish workout</button>
+        <p class="status" id="saved" role="status" aria-live="polite">Ticks and weights save on this phone automatically.</p>
+      </div>
+      <div class="logbox" id="logbox" hidden>
+        <h3>Your log</h3>
+        <ol class="log" id="log"></ol>
+      </div>
+
+      <p class="small muted">Drawings: <a href="https://github.com/everkinetic/data" target="_blank" rel="noopener">Everkinetic</a> by Greg Priday, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>, resized. openGym's own animations are licensed for its app only, so they show inside the openGym app, not here.</p>
+    </section>
+
+    <section>
+      <h2>Tired or short on time</h2>
+      <ul class="plain">
+        <li>Pair exercises 2 and 3 (chest and back). Do a set of one, rest 30 seconds, do a set of the other, then rest 2 minutes.</li>
+        <li>Eat your pre-gym snack 30–60 minutes before, and bring water.</li>
+        <li>Energy drink only before the gym, never after. Caffeine late makes your sleep worse.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Missed a night or got sick</h2>
+      <div class="note red"><b>Neck rule</b>Symptoms only above the neck (runny nose, light sore throat): a light workout is OK. Below the neck (fever, body aches, cough): rest.</div>
+      <ul class="plain">
+        <li><b>First workout back:</b> a half workout, 2 sets with lighter weights.</li>
+        <li><b>Never miss twice in a row.</b> After one missed night, the next session happens, even as a mini workout.</li>
+        <li><b>Mini workout (20 min):</b> the first 3 exercises, 2 sets each, no cardio.</li>
+        <li><b>Bored?</b> Try to beat last time's weight in the kg box. After 8 weeks, switch 1–2 exercises to their Swap.</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- ============ FOOD ============ -->
+  <div class="view" id="v-food" hidden>
+    <section>
+      <h2>Drinks first</h2>
+      <p class="lead">Your drinks were about 900–1,200 kcal a day. This one change matters more than anything else on this page.</p>
+      <div class="tablebox">
+        <table>
+          <thead><tr><th>Instead of</th><th>Have</th></tr></thead>
+          <tbody>
+            <tr><td>Pepsi or cola</td><td>Pepsi Diet, Pepsi Max or Coke Zero. The same number is OK in week 1. Later, aim for 2 a day or fewer.</td></tr>
+            <tr><td>Tiger or Monster</td><td>Red Bull Sugarfree or Monster Ultra (zero sugar). One a day max, only before the gym. Only regular Tiger in the shop? Drink half a can.</td></tr>
+            <tr><td>Spanish latte</td><td>Americano or cappuccino with no sugar. Keep the Spanish latte as a treat, 1–2 times a week.</td></tr>
+            <tr><td>Juice</td><td>Eat the whole fruit instead.</td></tr>
+            <tr><td>Chai</td><td>Max 1 teaspoon of sugar per glass (<span class="ar">استكان</span>).</td></tr>
+            <tr><td>Water</td><td>2.5–3 L a day. Keep a bottle on your desk.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Build every plate</h2>
+      <div class="plate">
+        <div class="disc" role="img" aria-label="Plate: half vegetables, a quarter protein, a quarter carbs"></div>
+        <ul class="legend">
+          <li><i class="i-green"></i><div><b>Half: vegetables.</b> Salad, or the vegetables in the marag.</div></li>
+          <li><i class="i-red"></i><div><b>Quarter: protein.</b> A palm or more of chicken, meat, fish or eggs.</div></li>
+          <li><i class="i-amber"></i><div><b>Quarter: carbs.</b> 1 cup of timman or ½ samoon.</div></li>
+        </ul>
+      </div>
+      <p class="small muted">Oil: one spoon per meal, not a pour.</p>
+    </section>
+
+    <section>
+      <h2>Your meals</h2>
+      <p class="lead">Pick one option for each meal. All five add up to about 2,000 kcal and 130–150 g of protein. Calories are estimates.</p>
+
+      <div class="meal">
+        <div class="meal-head"><h3>Breakfast</h3><span>9:00 · ~450 kcal</span></div>
+        <ul class="opts">
+          <li><span class="opt-name">Light makhlama <span class="ar">مخلمة</span></span><span class="muted small">3 eggs, tomato, onion, 1 teaspoon of oil, ½ samoon, cucumber.</span><span class="opt-fig">~450 kcal · 22 g protein</span></li>
+          <li><span class="opt-name">Boiled eggs <span class="ar">بيض مسلوق</span></span><span class="muted small">3 eggs, 1 slice of white cheese (<span class="ar">جبن أبيض</span>), tomato and cucumber, ½ samoon.</span><span class="opt-fig">~460 kcal · 27 g protein</span></li>
+          <li><span class="opt-name">Baqilla <span class="ar">باقلاء</span></span><span class="muted small">A small bowl without the dihin (ghee), 1 egg on top, ½ khubuz.</span><span class="opt-fig">~450 kcal · 23 g protein</span></li>
+        </ul>
+      </div>
+
+      <div class="meal">
+        <div class="meal-head"><h3>Lunch</h3><span>1:30 · ~550 kcal</span></div>
+        <ul class="opts">
+          <li><span class="opt-name">Shish tawook sandwich <span class="ar">شيش طاووق</span></span><span class="muted small">1 samoon, grilled chicken, no fries inside, a little toum, side salad.</span><span class="opt-fig">~580 kcal · 45 g protein</span></li>
+          <li><span class="opt-name">Chicken tikka plate <span class="ar">تكة دجاج</span></span><span class="muted small">With salad and ½ samoon. No fries.</span><span class="opt-fig">~500 kcal · 45 g protein</span></li>
+          <li><span class="opt-name">From home</span><span class="muted small">1 cup of timman, 1.5 palms of chicken, salad.</span><span class="opt-fig">~540 kcal · 45 g protein</span></li>
+        </ul>
+      </div>
+
+      <div class="meal">
+        <div class="meal-head"><h3>Dinner</h3><span>6:00 · ~550–600 kcal</span></div>
+        <ul class="opts">
+          <li><span class="opt-name">Timman and marag <span class="ar">تمن ومرق</span></span><span class="muted small">1 cup of timman, a big bowl of marag (bamya, fasolia or spinach), a palm of meat or chicken, salad.</span><span class="opt-fig">~600 kcal · 35 g protein</span></li>
+          <li><span class="opt-name">Grilled chicken or fish <span class="ar">سمك مسكوف</span></span><span class="muted small">Masgouf on weekends. With salad and 1 cup of timman or ½ khubuz.</span><span class="opt-fig">~550 kcal · 45 g protein</span></li>
+          <li><span class="opt-name">Fast food night</span><span class="muted small">2 nights a week max. Order from the list below.</span><span class="opt-fig">~500–650 kcal</span></li>
+        </ul>
+      </div>
+
+      <div class="meal">
+        <div class="meal-head"><h3>Before the gym</h3><span>10:00 · ~100–200 kcal</span></div>
+        <ul class="opts">
+          <li><span class="opt-name">Banana and laban <span class="ar">موز ولبن</span></span><span class="muted small">1 banana and 1 cup of laban.</span><span class="opt-fig">~200 kcal · 8 g protein</span></li>
+          <li><span class="opt-name">Dates <span class="ar">تمر</span></span><span class="muted small">4 dates with tea, no sugar.</span><span class="opt-fig">~100 kcal</span></li>
+        </ul>
+      </div>
+
+      <div class="meal">
+        <div class="meal-head"><h3>After the gym</h3><span>12:00 · ~300 kcal</span></div>
+        <ul class="opts">
+          <li><span class="opt-name">Eggs and laban</span><span class="muted small">2 boiled eggs, 1 cup of laban, cucumber.</span><span class="opt-fig">~300 kcal · 20 g protein</span></li>
+          <li><span class="opt-name">Tuna <span class="ar">تونة</span></span><span class="muted small">1 can, drained, with tomato and cucumber and ½ khubuz.</span><span class="opt-fig">~300 kcal · 30 g protein</span></li>
+          <li><span class="opt-name">Lablabi <span class="ar">لبلبي</span></span><span class="muted small">A bowl from the cart on a winter night.</span><span class="opt-fig">~300 kcal · 15 g protein</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Hungry between meals</h2>
+      <div class="note"><b>Ask yourself: would I eat plain chicken and rice right now?</b>Yes: it's real hunger. Have a free food below, or eat your next meal. No: it's a craving. Drink water or tea without sugar and wait 15 minutes.</div>
+      <p><b>Free foods</b> <span class="muted">(eat as much as you like)</span></p>
+      <div class="free">
+        <span>Cucumber<span class="ar">خيار</span></span>
+        <span>Boiled turnip<span class="ar">شلغم</span></span>
+        <span>Beetroot<span class="ar">شوندر</span></span>
+        <span>Lettuce<span class="ar">خس</span></span>
+        <span>Carrots<span class="ar">جزر</span></span>
+        <span>Radish<span class="ar">فجل</span></span>
+      </div>
+      <p class="small muted">Plus 1–2 pieces of fruit a day: orange, mandarin (<span class="ar">لالنكي</span>), apple or pomegranate (<span class="ar">رمان</span>).</p>
+    </section>
+
+    <section>
+      <h2>Fast food, 2 nights a week</h2>
+      <div class="chips">
+        <span class="chip">Grilled, not fried</span>
+        <span class="chip">No fries</span>
+        <span class="chip">Zero-sugar drink</span>
+        <span class="chip">Skip extra toum <span class="ar">ثومية</span> and mayo</span>
+        <span class="chip">One bread</span>
+      </div>
+      <ul class="rank">
+        <li><span class="tag best">Best</span><div><b>Shish tawook or tikka plate</b> with salad<br><span class="opt-fig">~500–650 kcal</span></div></li>
+        <li><span class="tag ok">Good</span><div><b>Chicken shawarma</b>, no fries inside, a little toum<br><span class="opt-fig">~500–600 kcal</span></div></li>
+        <li><span class="tag ok">OK</span><div><b>Single burger</b>, no cheese or mayo, no fries<br><span class="opt-fig">~500 kcal</span></div></li>
+        <li><span class="tag worst">Worst</span><div><b>Broasted <span class="ar">بروستد</span> with fries and cola</b>. If you must: 2 pieces, skin off, no fries.<br><span class="opt-fig">1,300+ kcal as a full meal</span></div></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Ask your mom</h2>
+      <ul class="plain">
+        <li>One spoon of oil in the marag and makhlama, not a pour.</li>
+        <li>Grill the chicken or bake it in the oven instead of frying.</li>
+        <li>More meat and marag on your plate, less timman.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer class="wrap">Built from studies on training, protein, diet drinks and sleep, and from Built With Science's beginner full-body routine. Calories are estimates. Your ticks, weights and log are saved only in this browser on this phone.</footer>
+
+<script>
+(function(){
+  var KEY = 'plan-82-75';
+
+  // ---------- storage ----------
+  var store = null;
+  try { store = window.localStorage; store.setItem('__t', '1'); store.removeItem('__t'); } catch (e) { store = null; }
+  function load(){ if (!store) return {}; try { return JSON.parse(store.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  var st = load();
+  st.ticks = st.ticks || {}; st.kg = st.kg || {}; st.log = st.log || [];
+  // Ask the browser to keep this data even when the phone is low on space.
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+
+  var statusEl = document.getElementById('saved');
+  var IDLE = 'Ticks and weights save on this phone automatically.';
+  var statusTimer;
+  function say(msg, bad, keep){
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('bad', !!bad);
+    clearTimeout(statusTimer);
+    if (!keep) statusTimer = setTimeout(function(){ if (store) { statusEl.textContent = IDLE; statusEl.classList.remove('bad'); } }, 2200);
+  }
+  function save(flash){
+    var ok = false;
+    if (store) { try { store.setItem(KEY, JSON.stringify(st)); ok = true; } catch (e) {} }
+    if (!ok) say("Can't save here. This browser is blocking storage (private mode?).", true, true);
+    else if (flash) say('Saved ✓');
+    return ok;
+  }
+  if (!store) say("Can't save here. This browser is blocking storage (private mode?).", true, true);
+
+  // ---------- tabs ----------
+  var views = ['start', 'workout', 'food'];
+  function show(v, scroll){
+    if (views.indexOf(v) < 0) v = 'start';
+    views.forEach(function(x){
+      document.getElementById('v-' + x).hidden = (x !== v);
+      var a = document.querySelector('[data-tab="' + x + '"]');
+      if (x === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    if (scroll) {
+      var nav = document.querySelector('nav.tabs');
+      var top = nav.getBoundingClientRect().top + window.scrollY;
+      if (window.scrollY > top) window.scrollTo(0, top);
+    }
+  }
+  window.addEventListener('hashchange', function(){ show(location.hash.slice(1), true); });
+  show(location.hash.slice(1), false);
+
+  // ---------- dates (a workout after midnight counts for the night before) ----------
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function key(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function parse(k){ var p = k.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function gymDay(){ return key(new Date(Date.now() - 4 * 3600 * 1000)); }
+  function daysBetween(a, b){ return Math.round((parse(b) - parse(a)) / 86400000); }
+  function weekStart(k){ var d = parse(k); d.setDate(d.getDate() - ((d.getDay() + 1) % 7)); return key(d); } // week starts Saturday
+  function nice(k){ return parse(k).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); }
+  function ago(n){ return n <= 0 ? 'today' : n === 1 ? 'yesterday' : n + ' days ago'; }
+
+  // ---------- workout A / B ----------
+  function other(w){ return w === 'A' ? 'B' : 'A'; }
+  function pick(w){
+    ['A', 'B'].forEach(function(x){
+      document.getElementById('w' + x).hidden = (x !== w);
+      document.getElementById('btn' + x).setAttribute('aria-pressed', x === w ? 'true' : 'false');
+    });
+    st.w = w; save(false);
+  }
+  document.getElementById('btnA').addEventListener('click', function(){ pick('A'); });
+  document.getElementById('btnB').addEventListener('click', function(){ pick('B'); });
+  pick(st.w === 'B' ? 'B' : 'A');
+
+  // ---------- ticks ----------
+  Array.prototype.forEach.call(document.querySelectorAll('.sets input[type="checkbox"]'), function(cb){
+    cb.checked = !!st.ticks[cb.id];
+    cb.addEventListener('change', function(){
+      if (cb.checked) st.ticks[cb.id] = true; else delete st.ticks[cb.id];
+      save(true);
+    });
+  });
+  document.getElementById('clear').addEventListener('click', function(){
+    Array.prototype.forEach.call(document.querySelectorAll('#w' + st.w + ' .sets input[type="checkbox"]'), function(cb){
+      cb.checked = false; delete st.ticks[cb.id];
+    });
+    save(true);
+  });
+
+  // ---------- kg boxes ----------
+  Array.prototype.forEach.call(document.querySelectorAll('.sets .kg input'), function(inp){
+    var id = inp.id.replace('kg', '');
+    if (st.kg[id]) inp.value = st.kg[id];
+    inp.addEventListener('input', function(){
+      var v = inp.value.replace(',', '.').replace(/[^0-9.]/g, '');
+      if (v !== inp.value) inp.value = v;
+      if (v) st.kg[id] = v; else delete st.kg[id];
+      save(true);
+    });
+  });
+
+  // ---------- next workout, week dots, log ----------
+  function render(){
+    var last = st.log[st.log.length - 1];
+    var today = gymDay();
+    document.getElementById('nextW').textContent = 'Workout ' + st.w;
+
+    var lastLine = document.getElementById('lastLine');
+    var nudge = document.getElementById('nudge');
+    if (!last) {
+      lastLine.textContent = 'No workouts saved yet. Tick sets as you go, then press Finish workout.';
+      nudge.textContent = '';
+    } else {
+      var gap = daysBetween(last.d, today);
+      lastLine.textContent = 'Last: Workout ' + last.w + ', ' + nice(last.d) + ' (' + ago(gap) + ')';
+      nudge.textContent = gap >= 3 ? "It's been " + gap + ' days. Never miss twice: go tonight, even for the 20-minute mini workout.' : '';
+    }
+
+    var ws = weekStart(today);
+    var n = st.log.filter(function(e){ return weekStart(e.d) === ws; }).length;
+    var week = document.getElementById('week');
+    week.innerHTML = '';
+    for (var i = 0; i < Math.max(3, n); i++) {
+      var dot = document.createElement('i');
+      if (i < n) dot.className = 'on';
+      week.appendChild(dot);
+    }
+    week.appendChild(document.createTextNode(' This week: ' + n + ' of 3'));
+
+    var box = document.getElementById('logbox');
+    var list = document.getElementById('log');
+    list.innerHTML = '';
+    box.hidden = st.log.length === 0;
+    st.log.slice(-8).reverse().forEach(function(e, idx){
+      var li = document.createElement('li');
+      var a = document.createElement('span'); a.innerHTML = '<span class="w">Workout ' + e.w + '</span> · ' + nice(e.d);
+      var b = document.createElement('span'); b.className = 'n'; b.textContent = e.done + '/' + e.total + ' sets';
+      li.appendChild(a); li.appendChild(b);
+      if (idx === 0) {
+        var undo = document.createElement('button');
+        undo.type = 'button'; undo.className = 'link'; undo.textContent = 'Undo';
+        undo.addEventListener('click', function(){
+          if (!window.confirm('Delete this saved workout (' + nice(e.d) + ')?')) return;
+          st.log.pop(); save(false); render(); say('Removed.');
+        });
+        li.appendChild(undo);
+      } else {
+        li.appendChild(document.createElement('span'));
+      }
+      list.appendChild(li);
+    });
+  }
+
+  document.getElementById('finish').addEventListener('click', function(){
+    var w = st.w;
+    var boxes = document.querySelectorAll('#w' + w + ' .sets input[type="checkbox"]');
+    var done = 0, kg = {};
+    Array.prototype.forEach.call(boxes, function(cb){ if (cb.checked) done++; });
+    if (!done) { say('Tick the sets you did first, then press Finish workout.', true); return; }
+    for (var i = 1; i <= 5; i++) if (st.kg[w + i]) kg[w + i] = st.kg[w + i];
+    st.log.push({ d: gymDay(), w: w, done: done, total: boxes.length, kg: kg });
+    Array.prototype.forEach.call(boxes, function(cb){ cb.checked = false; delete st.ticks[cb.id]; });
+    pick(other(w));
+    if (save(false)) say('Workout ' + w + ' saved (' + done + ' of ' + boxes.length + ' sets). Next time: Workout ' + other(w) + '.', false, true);
+    render();
+    document.getElementById('today').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  render();
+
+  // ---------- offline support (only on the real website) ----------
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
+})();
+
+</script>
+</body>
+</html>
